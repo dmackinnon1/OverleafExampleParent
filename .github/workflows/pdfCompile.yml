@@ -15,13 +15,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: add permissions
         run: "git config --global --add safe.directory /__w/OverleafExampleParent/OverleafExampleParent"
       - name: set git variables
         run: |
             cd ./overleafExample
-            pwd
-            ls
             git config --global user.email "dmackinnon1@gmail.com"
             git config --global user.name "Dan MacKinnon"
             cd ..
@@ -33,9 +33,7 @@ jobs:
       - name: Run latexmk
         run: |
           cd ./overleafExample
-          pwd
-          ls
-          latexmk --pdflatex ./overleafExample/main.tex
+          latexmk --pdflatex main.tex
           cd ..
       - name: Store build timestamp
         run: echo "BUILD_TIME=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
