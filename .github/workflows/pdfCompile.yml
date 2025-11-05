@@ -10,6 +10,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: texlive/texlive:latest
     permissions:
       # Required to create a release
       contents: write
@@ -29,11 +30,10 @@ jobs:
           git rm --ignore-unmatch *.pdf
           git commit --allow-empty -m 'removing old pdfs, github action'
           git push
-      - name: Run LaTeX action
-        uses: xu-cheng/latex-action@v3
-        with:
-          root_file: ./overleafExample/main.tex
-          texlive_version: 2025
+      - name: Run latexmk
+        run: |
+          cd ./overleafExample
+          latexmk --pdflatex main.tex
       - name: Store build timestamp
         run: echo "BUILD_TIME=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
       - name: change file name
