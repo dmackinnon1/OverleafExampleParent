@@ -10,31 +10,30 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: texlive/texlive:latest
-
+    permissions:
+      # Required to create a release
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: add permissions
-        run: "git config --global --add safe.directory /__w/OverleafExampleParent/OverleafExampleParent"
       - name: set git variables
         run: |
             cd ./overleafExample
-            git config --global user.email "dmackinnon1@gmail.com"
-            git config --global user.name "Dan MacKinnon"
+            git config --global user.name "GitHub Actions Bot"
+            git config --global user.email "github-actions-bot@users.noreply.github.com"
             cd ..
       - name: cleanup old pdfs
         run: |
           git rm --ignore-unmatch *.pdf
           git commit --allow-empty -m 'removing old pdfs, github action'
           git push
-      - name: Run latexmk
-        run: |
-          cd ./overleafExample
-          latexmk --pdflatex main.tex
-          cd ..
+      - name: Run LaTeX action
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ./overleafExample/main.tex
+          texlive_version: 2025
       - name: Store build timestamp
         run: echo "BUILD_TIME=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
       - name: change file name
